@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class WebClientConfiguration {
 
-    private final String API_DISPOSAL_MS = "http://localhost:8083/api/disposal";
+    private final String API_DISPOSAL_MS = "http://disposalManagementService:8083/api/disposal";
 
 
     @Bean
