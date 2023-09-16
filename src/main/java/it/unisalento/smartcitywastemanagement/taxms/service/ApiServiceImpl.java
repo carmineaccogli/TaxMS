@@ -21,7 +21,7 @@ public class ApiServiceImpl implements ApiService {
     public Mono<List<CitizenWasteMetricsDTO>> APICALL_getDisposalData(int year) {
 
         return disposalDataWebClient.get()
-                .uri("/metrics/{year}", year)
+                .uri("/metrics/year/{year}", year)
                 .retrieve()
                 .bodyToFlux(CitizenWasteMetricsDTO.class)
                 .collectList();
