@@ -2,7 +2,6 @@ package it.unisalento.smartcitywastemanagement.taxms.restcontrollers;
 
 
 import it.unisalento.smartcitywastemanagement.taxms.domain.Tax;
-import it.unisalento.smartcitywastemanagement.taxms.dto.PaymentRequestDTO;
 import it.unisalento.smartcitywastemanagement.taxms.dto.ResponseDTO;
 import it.unisalento.smartcitywastemanagement.taxms.dto.TaxDTO;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.AnnualTaxAlreadyEmittedException;
@@ -11,19 +10,22 @@ import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxRateNotFoundEx
 import it.unisalento.smartcitywastemanagement.taxms.mappers.TaxMapper;
 import it.unisalento.smartcitywastemanagement.taxms.service.ManageTaxService;
 import it.unisalento.smartcitywastemanagement.taxms.service.PayTaxService;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value="/api/tax")
+@Validated
 public class TaxRestController {
 
     @Autowired
@@ -36,9 +38,9 @@ public class TaxRestController {
     PayTaxService payTaxService;
 
     @RequestMapping(value="/emit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> requestEmitTaxes() throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException {
+    public ResponseEntity<ResponseDTO> requestEmitTaxes(@RequestBody  Map<@NotBlank String, @NotNull @DecimalMin(value = "0.0", inclusive = false) Double> feeMultiplierByType) throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException {
 
-        List<String> generatedTaxCodes = manageTaxService.emitTaxes();
+        List<String> generatedTaxCodes = manageTaxService.emitTaxes(feeMultiplierByType);
 
         return new ResponseEntity<>(
                 new ResponseDTO("Emitted "+generatedTaxCodes.size()+" new Taxes",generatedTaxCodes),
@@ -59,6 +61,7 @@ public class TaxRestController {
 
         return ResponseEntity.ok(all_taxes);
     }
+
 
 
 

@@ -2,6 +2,8 @@ package it.unisalento.smartcitywastemanagement.taxms.exceptions;
 import com.stripe.exception.StripeException;
 import it.unisalento.smartcitywastemanagement.taxms.domain.Tax;
 import it.unisalento.smartcitywastemanagement.taxms.dto.ExceptionDTO;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.util.Set;
 
 /**
  *  Quando una eccezione viene sollevata, questa classe si occupa di restituire nel body
@@ -106,6 +110,45 @@ public class CustomExceptionHandler {
                         "Error during payment "+message
                 ));
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+            ConstraintViolationException ex) {
+
+        StringBuilder errorString = new StringBuilder();
+        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+
+        for (ConstraintViolation<?> violation : violations) {
+            String message = violation.getMessage();
+            String property = violation.getPropertyPath().toString();
+            errorString.append(property).append(":").append(message).append(". ");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionDTO(
+                        14,
+                        ConstraintViolationException.class.getSimpleName(),
+                        errorString.deleteCharAt(errorString.length() - 2).toString()
+                ));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex) {
+
+        StringBuilder errorString = new StringBuilder();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String errorMessage = error.getDefaultMessage();
+            errorString.append(errorMessage).append(".");
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionDTO(
+                        14,
+                        MethodArgumentNotValidException.class.getSimpleName(),
+                        errorString.deleteCharAt(errorString.length() - 1).toString()
+                ));
+    }
+
+
 
 
 

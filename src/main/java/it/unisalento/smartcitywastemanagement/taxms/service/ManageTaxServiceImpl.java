@@ -63,7 +63,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
      */
 
 
-    public List<String> emitTaxes() throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException{
+    public List<String> emitTaxes(Map<String,Double> taxRates) throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException{
 
         // 1
         boolean alreadyEmitted = checkAlreadyEmitted(Year.now().getValue());
@@ -77,7 +77,8 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue()).block();
 
         // 3
-        List<TaxRate> taxRates = taxRateService.findAllTaxRates();
+        //List<TaxRate> taxRates = taxRateService.findAllTaxRates();
+
 
         // 4
         LocalDate expireDate = getExpireDate();
@@ -145,7 +146,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
     }
 
 
-    private BigDecimal getFeeMultiplierByType(String type, List<TaxRate> taxRates) throws TaxRateNotFoundException {
+    /*private BigDecimal getFeeMultiplierByType(String type, List<TaxRate> taxRates) throws TaxRateNotFoundException {
 
         Optional<BigDecimal> feeMultiplier = taxRates.stream()
                 .filter(item -> item.getType().equals(type))
@@ -156,9 +157,18 @@ public class ManageTaxServiceImpl implements ManageTaxService{
             throw new TaxRateNotFoundException(type);
 
         return feeMultiplier.get();
+    }*/
+
+    private BigDecimal getFeeMultiplierByType(String type, Map<String,Double> taxRates) throws TaxRateNotFoundException {
+
+        if(taxRates.containsKey(type))
+            return BigDecimal.valueOf(taxRates.get(type));
+        else
+            throw new TaxRateNotFoundException(type);
     }
 
-    private BigDecimal calculateTax(GeneratedVolumePerYearDTO currentVolume, List<TaxRate> taxRates) throws TaxRateNotFoundException {
+
+    private BigDecimal calculateTax(GeneratedVolumePerYearDTO currentVolume, Map<String,Double> taxRates) throws TaxRateNotFoundException {
         BigDecimal mixedWaste_taxAmount = getFeeMultiplierByType("Indifferenziata",taxRates).multiply(currentVolume.getMixedWaste());
         BigDecimal sortedWaste_taxAmount = BigDecimal.ZERO;
 
