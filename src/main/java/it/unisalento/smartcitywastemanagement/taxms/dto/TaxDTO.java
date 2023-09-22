@@ -23,7 +23,6 @@ public class TaxDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate paymentDate;
 
-    private String payment_id;
 
     private String taxCode;
 
@@ -77,13 +76,6 @@ public class TaxDTO {
         this.paymentDate = paymentDate;
     }
 
-    public String getPayment_id() {
-        return payment_id;
-    }
-
-    public void setPayment_id(String payment_id) {
-        this.payment_id = payment_id;
-    }
 
     public String getTaxCode() {
         return taxCode;
