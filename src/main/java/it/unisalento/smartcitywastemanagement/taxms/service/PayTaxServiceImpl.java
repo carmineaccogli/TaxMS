@@ -28,17 +28,26 @@ public class PayTaxServiceImpl implements PayTaxService{
     private TaxRepository taxRepository;
 
     @Autowired
+    private CitizenTaxStatusService citizenTaxStatusService;
+
+    @Autowired
     private StripePaymentService stripePaymentService;
+
+    @Autowired
+    private ManageTaxService manageTaxService;
 
     /** FUNZIONE PER PERMETTERE IL PAGAMENTO DI UNA TASSA
      *
      * 1 Ricerca tassa per Id e controllo status
      *      1.1 Se la tassa non esiste, eccezione
      *      1.2 Se esiste ma risulta già pagata, eccezione
-     * 2 Creo il cliente Stripe per le info fornite e contatto per eseguire il pagamento
+     * 2 Check sull'esistenza del customer per email
+     *      2.1 Se non esiste, si crea il customer e si aggiunge la carta indicata
+     *      2.2 Altrimenti, facciamo il controllo se la carta risulta essere presente o meno
      * 3 Check status pagamento
-     *      3.1 Se lo stato è "successful", si aggiorna il campo paymentDate della tassa
-     *      3.2 Altrimenti si restituisce un errore nella risposta
+     *      3.1 Se lo stato è "successful", si aggiorna il campo paymentDate della tassa per indicare l'avvenuto pagamento
+     * 4 Check per capire se il cittadino ha ulteriori tasse da pagare
+     *      4.1 Se no, aggiorniamo il suo status indicando una situazione regolare
      */
 
     public Charge payTax(PaymentInfo paymentInfo, String taxID) throws Exception {
@@ -55,16 +64,35 @@ public class PayTaxServiceImpl implements PayTaxService{
             throw new TaxAlreadyPaidException();
 
         // 2
-        Customer client = stripePaymentService.createCustomer(paymentInfo.getCardToken(), paymentInfo.getEmail(), paymentInfo.getFullName());
-        Charge paymentResponse = stripePaymentService.chargeCustomerCard(client.getId(),paymentInfo.getAmount());
+        Customer existsCustomer = stripePaymentService.getCustomerByEmail(paymentInfo.getEmail());
+        Charge paymentResponse;
+
+        // 2.1
+        if(existsCustomer == null) {
+            Customer newCustomer = stripePaymentService.createCustomer(paymentInfo.getCardToken(), paymentInfo.getEmail(), paymentInfo.getFullName());
+            paymentResponse = stripePaymentService.chargeCustomerDefaultCard(newCustomer.getId(), paymentInfo.getAmount());
+        }
+        // 2.2
+        else {
+            paymentResponse = stripePaymentService.chargeCustomerCard(existsCustomer.getId(), paymentInfo.getAmount(), paymentInfo.getCardToken());
+        }
+
 
         // 3
         if(paymentResponse.getStatus().equals("succeeded")) {
+            // 3.1
             taxToPay.setPaymentDate(getPaymentDate(paymentResponse.getCreated()));
             taxRepository.save(taxToPay);
         }
 
         // 4
+        boolean existsTaxToPay = manageTaxService.checkTaxToPay(taxToPay.getCitizenID());
+        // 4.1
+        if(!existsTaxToPay) {
+            citizenTaxStatusService.updateCitizenTaxStatus(taxToPay.getCitizenID(), true);
+        }
+
+
         return paymentResponse;
     }
 
@@ -72,12 +100,8 @@ public class PayTaxServiceImpl implements PayTaxService{
 
     private LocalDate getPaymentDate(long timestamp) {
 
-        Instant instant = Instant.ofEpochMilli(timestamp);
-        ZoneId zoneId = ZoneId.systemDefault();
-        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
-
-        // Estrai la data da LocalDateTime
-        return localDateTime.toLocalDate();
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        return instant.atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 
