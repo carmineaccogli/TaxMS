@@ -141,6 +141,10 @@ public class ManageTaxServiceImpl implements ManageTaxService{
 
     }
 
+    public boolean checkTaxToPay(String citizenID) {
+        return taxRepository.existsByCitizenIDAndPaymentDate(citizenID, null);
+    }
+
     private boolean checkAlreadyEmitted(int year) {
         return taxRepository.existsByYear(year);
     }
@@ -180,6 +184,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
 
         return mixedWaste_taxAmount.add(sortedWaste_taxAmount);
     }
+
 
 
     private LocalDate getExpireDate() {
