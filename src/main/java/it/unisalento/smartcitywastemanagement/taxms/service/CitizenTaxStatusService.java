@@ -12,4 +12,6 @@ public interface CitizenTaxStatusService {
     List<CitizenTaxStatus> findAllTaxStatus();
 
     CitizenTaxStatus findTaxStatusByCitizen(String citizenID) throws CitizenNotFoundException;
+
+    void updateCitizenTaxStatus(String citizenID,boolean status) throws CitizenNotFoundException;
 }
