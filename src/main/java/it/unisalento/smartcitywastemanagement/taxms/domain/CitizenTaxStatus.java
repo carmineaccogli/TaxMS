@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CitizenTaxStatus {
 
     @Id
-    private String Id;
+    private String id;
 
     @Indexed(unique = true)
     private String citizenID;
@@ -18,11 +18,11 @@ public class CitizenTaxStatus {
 
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        id = id;
     }
 
     public String getCitizenID() {
