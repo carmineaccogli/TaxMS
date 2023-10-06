@@ -26,14 +26,14 @@ public class CitizenTaxStatusServiceImpl implements CitizenTaxStatusService{
 
 
 
-    public CitizenTaxStatus findTaxStatusByCitizen(String citizenID) throws CitizenNotFoundException{
+    public CitizenTaxStatus findTaxStatusByCitizen(String citizenID) {
 
         CitizenTaxStatus taxStatus = null;
 
 
         Optional<CitizenTaxStatus> optTaxStatus = citizenTaxStatusRepository.findByCitizenID(citizenID);
         if(!optTaxStatus.isPresent())
-            throw new CitizenNotFoundException();
+            return null;
 
         taxStatus = optTaxStatus.get();
 

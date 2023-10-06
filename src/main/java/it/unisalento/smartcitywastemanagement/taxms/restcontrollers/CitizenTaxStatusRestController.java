@@ -41,11 +41,16 @@ public class CitizenTaxStatusRestController {
     }
 
     @RequestMapping(value="/{citizenID}", method = RequestMethod.GET)
-    public CitizenTaxStatusDTO getTaxStatusByCitizen(@PathVariable String citizenID) throws CitizenNotFoundException {
+    public ResponseEntity<CitizenTaxStatusDTO> getTaxStatusByCitizen(@PathVariable String citizenID)  {
 
         CitizenTaxStatus result = citizenTaxStatusService.findTaxStatusByCitizen(citizenID);
 
-        return citizenTaxStatusMapper.toTaxStatusDTO(result);
+        if(result == null)
+            return ResponseEntity.noContent().build();
+        else {
+            CitizenTaxStatusDTO citizenTaxStatusDTO = citizenTaxStatusMapper.toTaxStatusDTO(result);
+            return ResponseEntity.ok(citizenTaxStatusDTO);
+        }
     }
 
 
