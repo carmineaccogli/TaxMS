@@ -50,9 +50,15 @@ public class TaxRestController {
 
 
     @RequestMapping(value="/taxStatus", method= RequestMethod.GET)
-    public ResponseEntity<?> getTaxStatusCurrentYear() {
+    public ResponseEntity<String> getTaxStatusCurrentYear() {
 
-        boolean status = manageTaxService.checkAlreadyEmitted(Year.now().getValue());
+        String status =null;
+
+        boolean taxEmitted = manageTaxService.checkAlreadyEmitted(Year.now().getValue());
+        if(taxEmitted)
+            status = "Emit";
+        else
+            status = "To emit";
 
         return ResponseEntity.ok(status);
     }
