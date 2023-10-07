@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Year;
 import java.util.*;
 
 @CrossOrigin
@@ -45,6 +46,15 @@ public class TaxRestController {
         return new ResponseEntity<>(
                 new ResponseDTO("Emitted "+generatedTaxCodes.size()+" new Taxes",generatedTaxCodes),
                 HttpStatus.CREATED);
+    }
+
+
+    @RequestMapping(value="/taxStatus", method= RequestMethod.GET)
+    public ResponseEntity<?> getTaxStatusCurrentYear() {
+
+        boolean status = manageTaxService.checkAlreadyEmitted(Year.now().getValue());
+
+        return ResponseEntity.ok(status);
     }
 
 

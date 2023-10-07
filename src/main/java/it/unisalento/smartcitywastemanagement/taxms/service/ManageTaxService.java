@@ -16,4 +16,6 @@ public interface ManageTaxService {
     List<String> emitTaxes(Map<String,Double> feeMultiplierByType)  throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException;
 
     boolean checkTaxToPay(String citizenID);
+
+    boolean checkAlreadyEmitted(int year);
 }

@@ -145,7 +145,9 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         return taxRepository.existsByCitizenIDAndPaymentDate(citizenID, null);
     }
 
-    private boolean checkAlreadyEmitted(int year) {
+
+
+    public boolean checkAlreadyEmitted(int year) {
         return taxRepository.existsByYear(year);
     }
 
