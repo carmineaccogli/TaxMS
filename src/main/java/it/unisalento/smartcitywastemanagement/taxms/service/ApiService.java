@@ -9,4 +9,6 @@ public interface ApiService {
 
 
     Mono<List<CitizenWasteMetricsDTO>> APICALL_getDisposalData(int year);
+
+    Mono<List<String>> APICALL_getCitizenData();
 }

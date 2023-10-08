@@ -21,6 +21,10 @@ public class ApiServiceImpl implements ApiService {
     WebClient disposalDataWebClient;
 
     @Autowired
+    WebClient citizenDataWebClient;
+
+
+    @Autowired
     private JwtUtilities jwtUtilities;
 
     public Mono<List<CitizenWasteMetricsDTO>> APICALL_getDisposalData(int year) {
@@ -32,6 +36,18 @@ public class ApiServiceImpl implements ApiService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                 .retrieve()
                 .bodyToFlux(CitizenWasteMetricsDTO.class)
+                .collectList();
+    }
+
+    public Mono<List<String>> APICALL_getCitizenData() {
+
+        final String jwtToken = jwtUtilities.generateToken();
+
+        return disposalDataWebClient.get()
+                .uri("/")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                .retrieve()
+                .bodyToFlux(String.class)
                 .collectList();
     }
 }

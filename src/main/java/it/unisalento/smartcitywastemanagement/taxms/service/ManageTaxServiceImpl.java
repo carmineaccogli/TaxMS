@@ -49,15 +49,18 @@ public class ManageTaxServiceImpl implements ManageTaxService{
     /** FUNZIONE EMISSIONE TASSE ANNUALI
      *
      * 1 Controllo se le tasse per l'anno corrente sono state già emesse
-     *      1.1 Se Sì, si avvisa il frontend che la richiesta non è stata eseguita
+     *      1.1 Se Sì, si avvisa che la richiesta non è stata eseguita
      * 2 Contatto DisposalMS per ottenere i dati dei volumi generati dai cittadini nell'anno corrente
-     * 3 Ottengo i taxRate attuali
+     * 3 Contatto CitizenMS per ottenere la lista di tutti i cittadini presenti
      * 4 Calcolo la data di scadenza pari a 6 mesi a partire dall'emissione
      * 5 Ottengo il numero di tasse presenti per poter generare il numero progressivo che farà parte del codice di ogni tassa
-     * 6 Per ogni elemento di disposalData calcolo la tassa annuale moltiplicando ogni campo per il rispettivo taxRate
-     * 7 Creo l'oggetto tassa per il singolo cittadino valido per l'anno corrente
-     * 8 Salvo l'oggetto tassa creato
-     * 9 Aggiorno il corrispettivo taxStatus a false(non regolare)
+     * 6 Per ogni citizen presente nella lista di ID ottenuta, prelevo la tassa base da taxRates
+     * 7 Controllo che il citizen in questione abbia effettuato o meno conferimenti
+     *      7.1 Se sì, calcolo la tassa annuale moltiplicando ogni campo per il rispettivo taxRate e sommandoci la tassa base
+     *      7.2 Altrimenti l'ammontare della tassa corrisponderà alla sola tassa base
+     * 8 Creo l'oggetto tassa per il singolo cittadino valido per l'anno corrente
+     * 9 Salvo l'oggetto tassa creato
+     * 10 Aggiorno il corrispettivo taxStatus a false(non regolare)
      *      9.1 Se esiste un documento di taxStatus per il cittadino, si aggiorna a false
      *      9.2 Altrimenti si crea e si setta a false
      */
@@ -72,13 +75,14 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         if(alreadyEmitted)
             throw new AnnualTaxAlreadyEmittedException();
 
-        System.out.println("TESTO LA CHIAMATA API");
         // 2
-        List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue()).block();
+        List<String> allCitizenIDs = apiService.APICALL_getCitizenData().block();
 
         // 3
-        //List<TaxRate> taxRates = taxRateService.findAllTaxRates();
+        List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue()).block();
 
+
+        //List<TaxRate> taxRates = taxRateService.findAllTaxRates();
 
         // 4
         LocalDate expireDate = getExpireDate();
@@ -87,18 +91,33 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         int p = taxRepository.findAll().size() + 1;
         List<String> createdTaxes = new ArrayList<>();
 
-        for(CitizenWasteMetricsDTO wasteMetricsDTO: disposalData) {
-            System.out.println("SONO NEL FOR");
+
+        for(String citizenID: allCitizenIDs) {
+
+            BigDecimal totalTax = BigDecimal.ZERO;
 
             // 6
-            GeneratedVolumePerYearDTO currentVolume = wasteMetricsDTO.getYearlyVolumes().get(0);
-            BigDecimal taxAmount = calculateTax(currentVolume, taxRates);
+            BigDecimal fixedFee = getFeeMultiplierByType("FixedFee",taxRates);
 
             // 7
+            CitizenWasteMetricsDTO citizenMetric = findCitizenWasteMetricWithID(disposalData,citizenID);
+
+            // 7.1
+            if(citizenMetric != null) {
+                GeneratedVolumePerYearDTO currentVolume = citizenMetric.getYearlyVolumes().get(0);
+                BigDecimal taxAmount = calculateTax(currentVolume, taxRates);
+                totalTax = fixedFee.add(taxAmount);
+            }
+            else {
+                // 7.2
+                totalTax = fixedFee;
+            }
+
+            // 8
             Tax newYearTax = new Tax();
-            newYearTax.setCitizenID(wasteMetricsDTO.getCitizenID());
+            newYearTax.setCitizenID(citizenID);
             newYearTax.setYear(Year.now().getValue());
-            newYearTax.setAmount(taxAmount.floatValue());
+            newYearTax.setAmount(totalTax.floatValue());
             newYearTax.setExpireDate(expireDate);
             newYearTax.setTaxCode(generateTaxCode(p));
 
@@ -108,7 +127,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
             p++;
 
             // 9
-            updateCitizenTaxStatus(wasteMetricsDTO.getCitizenID());
+            updateCitizenTaxStatus(citizenID);
         }
 
         return createdTaxes;
@@ -192,5 +211,15 @@ public class ManageTaxServiceImpl implements ManageTaxService{
     private LocalDate getExpireDate() {
         LocalDate todayDate = LocalDate.now();
         return todayDate.plusMonths(6);
+    }
+
+
+    private CitizenWasteMetricsDTO findCitizenWasteMetricWithID(List<CitizenWasteMetricsDTO> citizenWasteMetricsDTOList, String citizenID) {
+        for (CitizenWasteMetricsDTO metrics : citizenWasteMetricsDTOList) {
+            if (metrics.getCitizenID().equals(citizenID)) {
+                return metrics;
+            }
+        }
+        return null;
     }
 }

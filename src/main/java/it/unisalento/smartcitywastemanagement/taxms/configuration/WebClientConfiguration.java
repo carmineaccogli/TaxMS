@@ -11,6 +11,7 @@ public class WebClientConfiguration {
 
     private final String API_DISPOSAL_MS = "http://disposalManagementService:8080/api/disposal";
 
+    private final String API_CITIZEN_MS="http://citizenManagementService:8082/api/citizen";
 
     @Bean
     public WebClient disposalDataWebClient(WebClient.Builder webClientBuilder) {
@@ -26,6 +27,25 @@ public class WebClientConfiguration {
 
         return webClientBuilder
                 .baseUrl(API_DISPOSAL_MS)
+                .filter(errorHandlingFilter)
+                .build();
+    }
+
+
+    @Bean
+    public WebClient citizenDataWebClient(WebClient.Builder webClientBuilder) {
+
+        ExchangeFilterFunction errorHandlingFilter = ExchangeFilterFunction.ofResponseProcessor(
+                clientResponse -> {
+                    if (!clientResponse.statusCode().is2xxSuccessful()) {
+                        return clientResponse.createException()
+                                .flatMap(Mono::error);
+                    }
+                    return Mono.just(clientResponse);
+                });
+
+        return webClientBuilder
+                .baseUrl(API_CITIZEN_MS)
                 .filter(errorHandlingFilter)
                 .build();
     }
