@@ -9,7 +9,7 @@ import java.util.Date;
 public class TaxDTO {
 
 
-    private String Id;
+    private String id;
 
     private String citizenID;
 
@@ -29,11 +29,11 @@ public class TaxDTO {
 
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getCitizenID() {
