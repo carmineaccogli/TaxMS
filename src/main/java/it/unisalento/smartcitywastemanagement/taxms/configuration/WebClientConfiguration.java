@@ -11,7 +11,7 @@ public class WebClientConfiguration {
 
     private final String API_DISPOSAL_MS = "http://disposalManagementService:8080/api/disposal";
 
-    private final String API_CITIZEN_MS="http://citizenManagementService:8082/api/citizen";
+    private final String API_CITIZEN_MS="http://citizenManagementService:8080/api/citizen";
 
     @Bean
     public WebClient disposalDataWebClient(WebClient.Builder webClientBuilder) {

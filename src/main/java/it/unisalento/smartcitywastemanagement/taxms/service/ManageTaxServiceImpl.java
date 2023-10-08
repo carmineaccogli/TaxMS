@@ -76,7 +76,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
             throw new AnnualTaxAlreadyEmittedException();
 
         // 2
-        List<String> allCitizenIDs = apiService.APICALL_getCitizenData().block();
+        String[] allCitizenIDs = apiService.APICALL_getCitizenData().block();
 
         // 3
         List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue()).block();
@@ -93,6 +93,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
 
 
         for(String citizenID: allCitizenIDs) {
+
 
             BigDecimal totalTax = BigDecimal.ZERO;
 

@@ -39,15 +39,14 @@ public class ApiServiceImpl implements ApiService {
                 .collectList();
     }
 
-    public Mono<List<String>> APICALL_getCitizenData() {
+    public Mono<String[]> APICALL_getCitizenData() {
 
         final String jwtToken = jwtUtilities.generateToken();
 
-        return disposalDataWebClient.get()
-                .uri("/")
+        return citizenDataWebClient.get()
+                .uri("/ids")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                 .retrieve()
-                .bodyToFlux(String.class)
-                .collectList();
+                .bodyToMono(String[].class);
     }
 }

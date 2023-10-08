@@ -10,7 +10,7 @@ public class SecurityConstants {
     public static final String ISSUER ="http://taxService:8085";
 
 
-    public static final List<String> AUDIENCE = List.of("http://disposalManagementService:8083");
+    public static final List<String> AUDIENCE = List.of("http://disposalManagementService:8083","http://citizenManagementService:8082");
 
     public static final String SUBJECT = "taxMS";
 
