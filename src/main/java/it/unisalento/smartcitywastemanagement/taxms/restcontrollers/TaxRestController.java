@@ -54,7 +54,7 @@ public class TaxRestController {
 
         boolean taxStatus = manageTaxService.checkAlreadyEmitted(Year.now().getValue());
         return new ResponseEntity<>(
-                new ResponseDTO( "Tax status for current year", taxStatus),
+                new ResponseDTO( "Tax issued", taxStatus),
                 HttpStatus.OK);
     }
 
