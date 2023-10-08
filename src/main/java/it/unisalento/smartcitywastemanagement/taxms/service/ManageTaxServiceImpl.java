@@ -7,6 +7,7 @@ import it.unisalento.smartcitywastemanagement.taxms.domain.TaxRate;
 import it.unisalento.smartcitywastemanagement.taxms.dto.CitizenWasteMetricsDTO;
 import it.unisalento.smartcitywastemanagement.taxms.dto.GeneratedVolumePerYearDTO;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.AnnualTaxAlreadyEmittedException;
+import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxNotFoundException;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxRateNotFoundException;
 import it.unisalento.smartcitywastemanagement.taxms.repositories.CitizenTaxStatusRepository;
 import it.unisalento.smartcitywastemanagement.taxms.repositories.TaxRepository;
@@ -132,6 +133,16 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         }
 
         return createdTaxes;
+    }
+
+
+    public Tax findTaxByID(String taxID) throws TaxNotFoundException {
+
+        Optional<Tax> optTax = taxRepository.findById(taxID);
+        if(!optTax.isPresent())
+            throw new TaxNotFoundException();
+
+        return optTax.get();
     }
 
 

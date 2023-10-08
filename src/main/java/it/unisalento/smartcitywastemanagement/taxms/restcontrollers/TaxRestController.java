@@ -6,6 +6,7 @@ import it.unisalento.smartcitywastemanagement.taxms.dto.ResponseDTO;
 import it.unisalento.smartcitywastemanagement.taxms.dto.TaxDTO;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.AnnualTaxAlreadyEmittedException;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.CitizenNotFoundException;
+import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxNotFoundException;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxRateNotFoundException;
 import it.unisalento.smartcitywastemanagement.taxms.mappers.TaxMapper;
 import it.unisalento.smartcitywastemanagement.taxms.service.ManageTaxService;
@@ -71,6 +72,15 @@ public class TaxRestController {
         }
 
         return ResponseEntity.ok(all_taxes);
+    }
+
+    @RequestMapping(value="/{taxID}", method = RequestMethod.GET)
+    public ResponseEntity<TaxDTO> getTaxByID(@PathVariable("taxID") String taxID) throws TaxNotFoundException {
+
+        Tax tax = manageTaxService.findTaxByID(taxID);
+        TaxDTO taxDTO = taxMapper.toTaxDTO(tax);
+
+        return ResponseEntity.ok(taxDTO);
     }
 
 

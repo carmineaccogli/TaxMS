@@ -3,6 +3,7 @@ package it.unisalento.smartcitywastemanagement.taxms.service;
 import it.unisalento.smartcitywastemanagement.taxms.domain.Tax;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.AnnualTaxAlreadyEmittedException;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.CitizenNotFoundException;
+import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxNotFoundException;
 import it.unisalento.smartcitywastemanagement.taxms.exceptions.TaxRateNotFoundException;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface ManageTaxService {
     boolean checkTaxToPay(String citizenID);
 
     boolean checkAlreadyEmitted(int year);
+
+    Tax findTaxByID(String taxID) throws TaxNotFoundException;
 }
