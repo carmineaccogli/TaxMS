@@ -19,6 +19,7 @@ public class TaxMapper {
         taxDTO.setExpireDate(tax.getExpireDate());
         taxDTO.setPaymentDate(tax.getPaymentDate());
         taxDTO.setTaxCode(tax.getTaxCode());
+        taxDTO.setReceipt(tax.getReceipt());
 
 
         return taxDTO;

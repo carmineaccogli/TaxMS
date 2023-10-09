@@ -45,7 +45,7 @@ public class PayTaxServiceImpl implements PayTaxService{
      *      2.1 Se non esiste, si crea il customer e si aggiunge la carta indicata
      *      2.2 Altrimenti, facciamo il controllo se la carta risulta essere presente o meno
      * 3 Check status pagamento
-     *      3.1 Se lo stato è "successful", si aggiorna il campo paymentDate della tassa per indicare l'avvenuto pagamento
+     *      3.1 Se lo stato è "successful", si aggiorna il campo paymentDate e receipt della tassa per indicare l'avvenuto pagamento
      * 4 Check per capire se il cittadino ha ulteriori tasse da pagare
      *      4.1 Se no, aggiorniamo il suo status indicando una situazione regolare
      */
@@ -82,6 +82,7 @@ public class PayTaxServiceImpl implements PayTaxService{
         if(paymentResponse.getStatus().equals("succeeded")) {
             // 3.1
             taxToPay.setPaymentDate(getPaymentDate(paymentResponse.getCreated()));
+            taxToPay.setReceipt(paymentResponse.getReceiptUrl());
             taxRepository.save(taxToPay);
         }
 

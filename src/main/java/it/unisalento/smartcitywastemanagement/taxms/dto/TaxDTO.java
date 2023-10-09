@@ -26,6 +26,8 @@ public class TaxDTO {
 
     private String taxCode;
 
+    private String receipt;
+
 
 
     public String getId() {
@@ -83,5 +85,13 @@ public class TaxDTO {
 
     public void setTaxCode(String taxCode) {
         this.taxCode = taxCode;
+    }
+
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+        this.receipt = receipt;
     }
 }

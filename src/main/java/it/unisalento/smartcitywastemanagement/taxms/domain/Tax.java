@@ -1,6 +1,7 @@
 package it.unisalento.smartcitywastemanagement.taxms.domain;
 
 
+import com.stripe.model.Charge;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,6 +27,8 @@ public class Tax {
     private LocalDate expireDate;
 
     private LocalDate paymentDate;
+
+    private String receipt;
 
 
 
@@ -87,5 +90,14 @@ public class Tax {
 
     public void setTaxCode(String taxCode) {
         this.taxCode = taxCode;
+    }
+
+
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+        this.receipt = receipt;
     }
 }
