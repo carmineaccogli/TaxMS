@@ -53,7 +53,7 @@ public class TaxRestController {
     @RequestMapping(value="/taxStatus", method= RequestMethod.GET)
     public ResponseEntity<ResponseDTO> getTaxStatusCurrentYear() {
 
-        boolean taxStatus = manageTaxService.checkAlreadyEmitted(Year.now().getValue());
+        boolean taxStatus = manageTaxService.checkAlreadyEmitted(Year.now().getValue() - 1);
         return new ResponseEntity<>(
                 new ResponseDTO( "Tax issued", taxStatus),
                 HttpStatus.OK);
