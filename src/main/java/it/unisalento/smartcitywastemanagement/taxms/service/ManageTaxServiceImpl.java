@@ -70,7 +70,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
     public List<String> emitTaxes(Map<String,Double> taxRates) throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException{
 
         // 1
-        boolean alreadyEmitted = checkAlreadyEmitted(Year.now().getValue()); // inserire -1
+        boolean alreadyEmitted = checkAlreadyEmitted(Year.now().getValue() -1);
 
         // 1.1
         if(alreadyEmitted)
@@ -80,7 +80,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
         String[] allCitizenIDs = apiService.APICALL_getCitizenData().block();
 
         // 3
-        List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue()).block(); //inserire -1
+        List<CitizenWasteMetricsDTO> disposalData = apiService.APICALL_getDisposalData(Year.now().getValue() - 1).block(); //inserire -1
 
 
         //List<TaxRate> taxRates = taxRateService.findAllTaxRates();
@@ -118,7 +118,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
             // 8
             Tax newYearTax = new Tax();
             newYearTax.setCitizenID(citizenID);
-            newYearTax.setYear(Year.now().getValue());
+            newYearTax.setYear(Year.now().getValue() - 1);
             newYearTax.setAmount(totalTax.floatValue());
             newYearTax.setExpireDate(expireDate);
             newYearTax.setTaxCode(generateTaxCode(p));
