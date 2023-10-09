@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
@@ -27,7 +28,7 @@ public class ApiServiceImpl implements ApiService {
     @Autowired
     private JwtUtilities jwtUtilities;
 
-    public Mono<List<CitizenWasteMetricsDTO>> APICALL_getDisposalData(int year) {
+    public Mono<List<CitizenWasteMetricsDTO>> APICALL_getDisposalData(int year) throws WebClientRequestException {
 
         final String jwtToken = jwtUtilities.generateToken();
 
@@ -39,7 +40,7 @@ public class ApiServiceImpl implements ApiService {
                 .collectList();
     }
 
-    public Mono<String[]> APICALL_getCitizenData() {
+    public Mono<String[]> APICALL_getCitizenData() throws WebClientRequestException{
 
         final String jwtToken = jwtUtilities.generateToken();
 
