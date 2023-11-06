@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +28,7 @@ public class PaymentController {
     @Autowired
     PaymentInfoMapper paymentInfoMapper;
 
+    @PreAuthorize("hasRole('ROLE_Citizen')")
     @RequestMapping(value="/{taxID}", method= RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO> payATax(@PathVariable("taxID") String taxID ,@RequestBody @Valid PaymentRequestDTO paymentRequestDTO) throws Exception{
 

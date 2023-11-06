@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class TaxRestController {
     @Autowired
     PayTaxService payTaxService;
 
+    @PreAuthorize("hasRole('ROLE_MunicipalOffice')")
     @RequestMapping(value="/emit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO> requestEmitTaxes(@RequestBody  Map<@NotBlank String, @NotNull @DecimalMin(value = "0.0", inclusive = false) Double> feeMultiplierByType) throws AnnualTaxAlreadyEmittedException, TaxRateNotFoundException {
 
@@ -49,7 +51,7 @@ public class TaxRestController {
                 HttpStatus.CREATED);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_MunicipalOffice')")
     @RequestMapping(value="/taxStatus", method= RequestMethod.GET)
     public ResponseEntity<ResponseDTO> getTaxStatusCurrentYear() {
 
@@ -60,6 +62,7 @@ public class TaxRestController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_MunicipalOffice','ROLE_Citizen')")
     @RequestMapping(value="/citizen/{citizenID}", method = RequestMethod.GET)
     public ResponseEntity<List<TaxDTO>> getTaxesByCitizen(@PathVariable String citizenID) throws CitizenNotFoundException {
 
@@ -74,6 +77,7 @@ public class TaxRestController {
         return ResponseEntity.ok(all_taxes);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_MunicipalOffice','ROLE_Citizen')")
     @RequestMapping(value="/{taxID}", method = RequestMethod.GET)
     public ResponseEntity<TaxDTO> getTaxByID(@PathVariable("taxID") String taxID) throws TaxNotFoundException {
 

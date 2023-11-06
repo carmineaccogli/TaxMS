@@ -8,6 +8,7 @@ import it.unisalento.smartcitywastemanagement.taxms.mappers.CitizenTaxStatusMapp
 import it.unisalento.smartcitywastemanagement.taxms.service.CitizenTaxStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class CitizenTaxStatusRestController {
     @Autowired
     private CitizenTaxStatusMapper citizenTaxStatusMapper;
 
-
+    @PreAuthorize("hasRole('ROLE_MunicipalOffice')")
     @RequestMapping(value="/", method= RequestMethod.GET)
     public ResponseEntity<List<CitizenTaxStatusDTO>> getAllTaxStatus() {
 
@@ -40,6 +41,7 @@ public class CitizenTaxStatusRestController {
         return ResponseEntity.ok(all_taxStatus);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_MunicipalOffice','ROLE_Citizen')")
     @RequestMapping(value="/{citizenID}", method = RequestMethod.GET)
     public ResponseEntity<CitizenTaxStatusDTO> getTaxStatusByCitizen(@PathVariable String citizenID)  {
 
