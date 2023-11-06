@@ -28,35 +28,35 @@ import java.util.Set;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(CitizenNotFoundException.class)
-    public ResponseEntity<Object> handleSpecificException(CitizenNotFoundException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> citizenNotFoundHandler(CitizenNotFoundException ex) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionDTO(
-                        15,
+                        7,
                         CitizenNotFoundException.class.getSimpleName(),
                         "Citizen not found"
                 ));
     }
 
     @ExceptionHandler(AnnualTaxAlreadyEmittedException.class)
-    public ResponseEntity<Object> handleSpecificException(AnnualTaxAlreadyEmittedException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> annualTaxAlreadyEmittedHandler(AnnualTaxAlreadyEmittedException ex) {
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ExceptionDTO(
-                        21,
+                        25,
                         AnnualTaxAlreadyEmittedException.class.getSimpleName(),
                         "Taxes for the current year have already been issued"
                 ));
     }
 
     @ExceptionHandler(TaxRateNotFoundException.class)
-    public ResponseEntity<Object> handleSpecificException(TaxRateNotFoundException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> taxRateNotFoundHandler(TaxRateNotFoundException ex) {
+
         String message = ex.getMessage();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionDTO(
-                        22,
+                        26,
                         TaxRateNotFoundException.class.getSimpleName(),
                         "Tax Rate not found: "+message
                 ));
@@ -64,56 +64,56 @@ public class CustomExceptionHandler {
 
 
     @ExceptionHandler(WebClientResponseException.class)
-    public ResponseEntity<Object> handleSpecificException(WebClientResponseException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> webClientResponseHandler(WebClientResponseException ex) {
+
         HttpStatusCode httpStatus = ex.getStatusCode();
         String responseBody = ex.getResponseBodyAsString();
 
         return ResponseEntity.status(httpStatus)
                 .body(new ExceptionDTO(
-                        18,
+                        23,
                         WebClientResponseException.class.getSimpleName(),
                         responseBody
                 ));
     }
 
     @ExceptionHandler(TaxNotFoundException.class)
-    public ResponseEntity<Object> handleSpecificException(TaxNotFoundException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> taxNotFoundHandler(TaxNotFoundException ex) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionDTO(
-                        23,
+                        27,
                         TaxNotFoundException.class.getSimpleName(),
                         "Tax with the current ID not found"
                 ));
     }
 
     @ExceptionHandler(TaxAlreadyPaidException.class)
-    public ResponseEntity<Object> handleSpecificException(TaxAlreadyPaidException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> taxAlreadyPaidHandler(TaxAlreadyPaidException ex) {
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ExceptionDTO(
-                        24,
+                        28,
                         TaxAlreadyPaidException.class.getSimpleName(),
                         "A payment for the current tax is already registered"
                 ));
     }
 
     @ExceptionHandler(StripeException.class)
-    public ResponseEntity<Object> handleSpecificException(StripeException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> stripeExceptionHandler(StripeException ex) {
+
         String message = ex.getMessage();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionDTO(
-                        25,
+                        29,
                         StripeException.class.getSimpleName(),
                         "Error during payment "+message
                 ));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleMethodArgumentNotValid(
+    public ResponseEntity<Object> constraintViolationHandler(
             ConstraintViolationException ex) {
 
         StringBuilder errorString = new StringBuilder();
@@ -126,14 +126,14 @@ public class CustomExceptionHandler {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionDTO(
-                        14,
+                        30,
                         ConstraintViolationException.class.getSimpleName(),
                         errorString.deleteCharAt(errorString.length() - 2).toString()
                 ));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleMethodArgumentNotValid(
+    public ResponseEntity<Object> methodArgumetNotValidHandler(
             MethodArgumentNotValidException ex) {
 
         StringBuilder errorString = new StringBuilder();
@@ -143,20 +143,20 @@ public class CustomExceptionHandler {
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionDTO(
-                        14,
+                        17,
                         MethodArgumentNotValidException.class.getSimpleName(),
                         errorString.deleteCharAt(errorString.length() - 1).toString()
                 ));
     }
 
     @ExceptionHandler(WebClientRequestException.class)
-    public ResponseEntity<Object> handleSpecificException(WebClientRequestException ex) {
-        // Creare un oggetto di risposta personalizzato per l'eccezione specifica
+    public ResponseEntity<Object> webClientRequestHandler(WebClientRequestException ex) {
+
         String responseBody = ex.getMessage();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ExceptionDTO(
-                        19,
+                        24,
                         WebClientRequestException.class.getSimpleName(),
                         responseBody
                 ));
