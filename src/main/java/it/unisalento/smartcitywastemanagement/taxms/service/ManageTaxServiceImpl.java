@@ -95,7 +95,6 @@ public class ManageTaxServiceImpl implements ManageTaxService{
 
         for(String citizenID: allCitizenIDs) {
 
-
             BigDecimal totalTax = BigDecimal.ZERO;
 
             // 6
@@ -206,7 +205,7 @@ public class ManageTaxServiceImpl implements ManageTaxService{
 
 
     private BigDecimal calculateTax(GeneratedVolumePerYearDTO currentVolume, Map<String,Double> taxRates) throws TaxRateNotFoundException {
-        BigDecimal mixedWaste_taxAmount = getFeeMultiplierByType("Indifferenziata",taxRates).multiply(currentVolume.getMixedWaste());
+        BigDecimal mixedWaste_taxAmount = getFeeMultiplierByType("MixedWaste",taxRates).multiply(currentVolume.getMixedWaste());
         BigDecimal sortedWaste_taxAmount = BigDecimal.ZERO;
 
         for (Map.Entry<String, BigDecimal> entry : currentVolume.getSortedWaste().entrySet()) {
