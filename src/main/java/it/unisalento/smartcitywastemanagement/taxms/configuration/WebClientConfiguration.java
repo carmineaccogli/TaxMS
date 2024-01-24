@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class WebClientConfiguration {
 
-    private final String API_DISPOSAL_MS = "http://disposalManagementService:8080/api/disposal";
+    private final String API_DISPOSAL_MS = "http://disposals.scwmapp.int:8083/api/disposal";
 
     private final String API_CITIZEN_MS="http://citizenManagementService:8080/api/citizen";
 
